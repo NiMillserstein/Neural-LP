@@ -1,3 +1,4 @@
 *.pyc
 *.pckl
 datasets/*/all.txt
+datasets/*

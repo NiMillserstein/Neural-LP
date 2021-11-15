@@ -27,6 +27,7 @@ def main():
     parser.add_argument('--no_rules', default=False, action="store_true")
     parser.add_argument('--rule_thr', default=1e-2, type=float)    
     parser.add_argument('--no_preds', default=False, action="store_true")
+    parser.add_argument('--rel_preds', default=False, action="store_true")
     parser.add_argument('--get_vocab_embed', default=False, action="store_true")
     parser.add_argument('--exps_dir', default=None, type=str)
     parser.add_argument('--exp_name', default=None, type=str)
@@ -70,6 +71,10 @@ def main():
       assert not option.no_extra_facts
     if option.accuracy:
       assert option.top_k == 1
+
+    # Added by Keith
+    if option.rel_preds:
+        option.batch_size = 1
     
     os.environ["CUDA_VISIBLE_DEVICES"] = option.gpu
     tf.logging.set_verbosity(tf.logging.ERROR)
@@ -128,7 +133,11 @@ def main():
         if not option.no_preds:
             print("Start getting test predictions...")
             experiment.get_predictions()
-        
+
+        if option.rel_preds:
+            print("Start getting test relationship predictions...")
+            experiment.get_relationship_predictions()
+
         if not option.no_rules:
             print("Start getting rules...")
             experiment.get_rules()

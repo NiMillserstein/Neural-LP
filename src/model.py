@@ -28,6 +28,8 @@ class Learner(object):
         self.num_entity = option.num_entity
         self.num_operator = option.num_operator
         self.query_is_language = option.query_is_language
+
+        self.rel_preds = False
         
         if not option.query_is_language:
             self.num_query = option.num_query
@@ -60,7 +62,8 @@ class Learner(object):
         self.tails = tf.placeholder(tf.int32, [None])
         self.heads = tf.placeholder(tf.int32, [None])
         self.targets = tf.one_hot(indices=self.heads, depth=self.num_entity)
-            
+
+        # Keith: This is the conditional that is primarily used.
         if not self.query_is_language:
             self.queries = tf.placeholder(tf.int32, [None, self.num_step])
             self.query_embedding_params = tf.Variable(self._random_uniform_unit(
@@ -189,8 +192,9 @@ class Learner(object):
                     axis=1)
             else:
                 self.predictions = memory_read
-                           
+
         self.final_loss = - tf.reduce_sum(self.targets * tf.log(tf.maximum(self.predictions, self.thr)), 1)
+
         
         if not self.accuracy:
             self.in_top = tf.nn.in_top_k(
@@ -209,6 +213,11 @@ class Learner(object):
 
     def _run_graph(self, sess, qq, hh, tt, mdb, to_fetch):
         feed = {}
+        # Keith: This is the conditional that is used
+        #print("Data info")
+        #print(qq)
+        #print(hh)
+        #print(tt)
         if not self.query_is_language:
             feed[self.queries] = [[q] * (self.num_step-1) + [self.num_query]
                                   for q in qq]
@@ -237,6 +246,11 @@ class Learner(object):
 
     def get_predictions_given_queries(self, sess, qq, hh, tt, mdb):
         to_fetch = [self.in_top, self.predictions]
+        fetched = self._run_graph(sess, qq, hh, tt, mdb, to_fetch)
+        return fetched[0], fetched[1]
+
+    def get_rel_predictions_given_queries(self, sess, qq, hh, tt, mdb):
+        to_fetch = [self.predictions, self.final_loss]
         fetched = self._run_graph(sess, qq, hh, tt, mdb, to_fetch)
         return fetched[0], fetched[1]
 
