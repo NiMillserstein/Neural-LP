@@ -254,7 +254,7 @@ class Experiment():
   #              predictions_this_batch, final_loss \
 #                    = self.learner.get_rel_predictions_given_queries(self.sess, new_qq, hh, tt, mdb)
 #                rel_pred[rel] = final_loss[0]
-            #final_loss = [-x for x in final_loss]
+            final_loss = [-x for x in final_loss]
             final_loss = np.array(final_loss).reshape(2, -1)
             predicted_rels = np.argmax(final_loss, axis=1)
             #print("Final Predictions")
