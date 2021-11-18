@@ -207,16 +207,7 @@ class Experiment():
 
     def get_relationship_predictions(self):
         from sklearn.metrics import recall_score
-        #if self.option.query_is_language:
-        #    all_accu = []
-        #    all_num_preds = []
-        #    all_num_preds_no_mistake = []
 
-        #f = open(os.path.join(self.option.this_expsdir, "test_rel_predictions.txt"), "w")
-        #if self.option.get_phead:
-        #    f_p = open(os.path.join(self.option.this_expsdir, "test_preds_and_probs.txt"), "w")
-        #all_in_top = []
-        # TODO prepare with batch size 1 first
         num_entries = 0
         num_real_right = 0
         num_inv_right = 0
@@ -226,39 +217,19 @@ class Experiment():
         inv_preds = []
         num_rels = int(self.learner.num_operator/2)
         for batch in xrange(self.data.num_batch_test):
-            #if (batch + 1) % max(1, (self.data.num_batch_test / self.option.print_per_batch)) == 0:
-            #    sys.stdout.write("%d/%d\t" % (batch + 1, self.data.num_batch_test))
-            #    sys.stdout.flush()
-            # Keith: One-hot vector for correct
-            #rel_truth = np.zeros((num_rels))
-            rel_pred = np.zeros((num_rels))
-
             (qq, hh, tt), mdb = self.data.next_test()
-            #rel_truth[qq[0]] = 1
             rel_truth = qq[0]
             real_labs.append(rel_truth)
             inv_labs.append(rel_truth)
             new_qq = ()
             for rel in xrange(num_rels):
                 new_qq += (rel, rel+num_rels)
-            #print("Batch vars")
-            #print(new_qq)
             new_hh = hh * num_rels
             new_tt = tt * num_rels
-            #print(new_hh)
-            #print(new_tt)
             predictions_this_batch, final_loss \
                 = self.learner.get_rel_predictions_given_queries(self.sess, new_qq, new_hh, new_tt, mdb)
-#            for rel in xrange(num_rels):
- #               new_qq = (rel, rel+num_rels)
-  #              predictions_this_batch, final_loss \
-#                    = self.learner.get_rel_predictions_given_queries(self.sess, new_qq, hh, tt, mdb)
-#                rel_pred[rel] = final_loss[0]
-            final_loss = [-x for x in final_loss]
             final_loss = np.array(final_loss).reshape(2, -1)
             predicted_rels = np.argmax(final_loss, axis=1)
-            #print("Final Predictions")
-            #print(predicted_rels)
             print("Real Prediction: {}, Inv. Prediction: {}, Truth: {}".format(predicted_rels[0],
                                                                                predicted_rels[1],
                                                                                rel_truth))
@@ -269,11 +240,6 @@ class Experiment():
             if int(predicted_rels[1]) == rel_truth:
                 num_inv_right += 1
             num_entries += 1
-
-            # in_top is irrelevant)
-            # Shape is (2*batch_size, num_entities)
-            #print(predictions_this_batch.shape)
-            # Loss is of shape (batch_size * 2), one entry for relation, one for inverse.
 
         print("Total: %d, total real right: %d, total inv. right: %d" % (num_entries,
                                                                          num_real_right,
@@ -292,22 +258,6 @@ class Experiment():
         print("Real Recall: %.3f%%" % (100 * real_recall))
         print("Inv. Recall: %.3f%%" % (100 * inv_recall))
         print("Overall Recall: %.3f%%" % (100 * all_recall))
-
-        #f.close()
-        #if self.option.get_phead:
-        #    f_p.close()
-
-        #if self.option.query_is_language:
-        #    print("Averaged num of preds", np.mean(all_num_preds))
-        #    print("Averaged num of preds for no mistake", np.mean(all_num_preds_no_mistake))
-        #    msg = "Accuracy %0.4f" % np.mean(all_accu)
-        #    print(msg)
-        #    self.log_file.write(msg + "\n")
-
-        #msg = "Test in top %0.4f" % np.mean(all_in_top)
-        #msg += self.msg_with_time("\nTest predictions written.")
-        #print(msg)
-        #self.log_file.write(msg + "\n")
         
     def get_attentions(self):
         if self.option.query_is_language:

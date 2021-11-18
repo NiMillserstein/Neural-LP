@@ -49,7 +49,7 @@ def main():
     parser.add_argument('--batch_size', default=64, type=int)
     parser.add_argument('--print_per_batch', default=3, type=int)
     parser.add_argument('--max_epoch', default=10, type=int)
-    parser.add_argument('--min_epoch', default=5, type=int)
+    parser.add_argument('--min_epoch', default=10, type=int)
     parser.add_argument('--learning_rate', default=0.001, type=float)
     parser.add_argument('--no_norm', default=False, action="store_true")
     parser.add_argument('--thr', default=1e-20, type=float)
@@ -62,7 +62,7 @@ def main():
     parser.add_argument('--top_k', default=10, type=int)
 
     tf.test.is_gpu_available(cuda_only=False)
-
+    
     d = vars(parser.parse_args())
     option = Option(d)
     if option.exp_name is None:
@@ -110,7 +110,6 @@ def main():
     print("Learner built.")
 
     saver = tf.train.Saver(max_to_keep=option.max_epoch)
-    saver = tf.train.Saver()
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = False
     config.log_device_placement = False

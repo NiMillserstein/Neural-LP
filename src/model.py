@@ -96,9 +96,11 @@ class Learner(object):
                                              self.num_step, 
                                              axis=1)]
         
-        cell = tf.contrib.rnn.core_rnn_cell.LSTMCell(self.rnn_state_size, 
+        cell = tf.contrib.rnn.LSTMCell(self.rnn_state_size,
+        #cell = tf.contrib.rnn.core_rnn_cell.LSTMCell(self.rnn_state_size,
                                                      state_is_tuple=True)
-        self.cell = tf.contrib.rnn.core_rnn_cell.MultiRNNCell(
+        #self.cell = tf.contrib.rnn.core_rnn_cell.MultiRNNCell(
+        self.cell = tf.contrib.rnn.MultiRNNCell(
                                                     [cell] * self.num_layer, 
                                                     state_is_tuple=True)
         init_state = self.cell.zero_state(tf.shape(self.tails)[0], tf.float32)

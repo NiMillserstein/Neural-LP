@@ -9,7 +9,15 @@ NIPS 2017.
 ## Requirements
 - Python 2.7
 - Numpy 
-- Tensorflow 1.0.1
+- Tensorflow 1.9.0
+- Scikit-Learn 0.20.4
+
+####You can use the following conda commands to setup suitable environments for the code:
+```
+conda create -n 'my_env_name' tensorflow=1.9 python=2.7
+conda create -n 'my_env_name' tensorflow-gpu=1.9 python=2.7
+```
+Depending on whether GPU usage is desired (speeds up training and inference, but may not be available on all platforms).
 
 ## Quick start
 The following command starts training a dataset about family relations, and stores the experiment results in the folder `exps/demo/`.
