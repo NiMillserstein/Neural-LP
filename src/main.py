@@ -60,7 +60,9 @@ def main():
     parser.add_argument('--rand_break', default=False, action="store_true")
     parser.add_argument('--accuracy', default=False, action="store_true")
     parser.add_argument('--top_k', default=10, type=int)
-    
+
+    tf.test.is_gpu_available(cuda_only=False)
+
     d = vars(parser.parse_args())
     option = Option(d)
     if option.exp_name is None:
